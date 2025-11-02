@@ -49,16 +49,16 @@ const Register = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // Clear errors for the field being changed
+ 
     if (errors[e.target.name]) {
       setErrors({ ...errors, [e.target.name]: null });
     }
-    setMessage(null); // Clear overall message when typing
+    setMessage(null); 
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage(null); // Clear previous message
+    setMessage(null); 
 
     if (!validate()) {
       setMessage({ type: 'error', text: "Please correct the highlighted errors before submitting." });
@@ -68,16 +68,16 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      // API call to register endpoint with CORS headers
+      
       const response = await fetch('https://eventmanager-dr2z.onrender.com/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // CORS headers - backend should handle these, but we send proper headers
+
           'Accept': 'application/json',
         },
-        mode: 'cors', // Explicitly set CORS mode
-        credentials: 'omit', // Don't send cookies for cross-origin requests
+        mode: 'cors', 
+        credentials: 'omit',
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
@@ -85,7 +85,7 @@ const Register = () => {
         }),
       });
 
-      // Check if response is ok
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Registration failed' }));
         throw new Error(errorData.message || `Server error: ${response.status}`);
@@ -93,13 +93,13 @@ const Register = () => {
 
       const data = await response.json();
       
-      // Success message
+     
       setMessage({ 
         type: 'success', 
         text: data.message || "✅ Registration successful! Welcome to the club." 
       });
 
-      // Reset form data after successful submission
+
       setFormData({
         name: "",
         email: "",
@@ -107,16 +107,16 @@ const Register = () => {
       });
       setErrors({});
 
-      // Optionally redirect to login page after 2 seconds
+      
       setTimeout(() => {
         navigate('/Login');
       }, 2000);
 
     } catch (error) {
-      // Handle network errors or API errors
+      
       console.error('Registration error:', error);
       
-      // Check if it's a network error
+      
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         setMessage({ 
           type: 'error', 
@@ -180,7 +180,7 @@ const Register = () => {
                 <input
                   type="text"
                   name="name"
-                  placeholder="Full Name"
+                  placeholder="full Name"
                   value={formData.name}
                   onChange={handleChange}
                   disabled={isLoading}
@@ -196,7 +196,7 @@ const Register = () => {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email Address"
+                  placeholder="email address"
                   value={formData.email}
                   onChange={handleChange}
                   disabled={isLoading}
@@ -212,7 +212,7 @@ const Register = () => {
                 <input
                   type="password"
                   name="password"
-                  placeholder="Password (min. 6 characters)"
+                  placeholder="password (min. 6 characters)"
                   value={formData.password}
                   onChange={handleChange}
                   disabled={isLoading}
@@ -223,7 +223,7 @@ const Register = () => {
                 )}
               </div>
 
-              {/* Submission Button */}
+              
               <button
                 type="submit"
                 disabled={isLoading}
@@ -233,7 +233,7 @@ const Register = () => {
               </button>
             </form>
 
-            {/* Toggle to Login */}
+            
             <div className="text-center mt-6">
               <p className="text-gray-600 text-sm mb-2">Already have an account?</p>
               <button
@@ -245,7 +245,7 @@ const Register = () => {
               </button>
             </div>
 
-            {/* Social Icons */}
+           
             <div className="flex justify-center space-x-4 mt-6 pt-4 border-t border-gray-100">
               <button className="border border-gray-300 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition duration-150 shadow-sm">
                 <span className="text-xl font-bold text-gray-700">G</span>

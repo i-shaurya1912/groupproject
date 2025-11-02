@@ -1,54 +1,79 @@
-import React, { useState } from 'react';
-import { Search, Calendar, Utensils, Music, DollarSign, Coffee, Zap, User, Plus, X } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Search, Calendar, Utensils, Music, DollarSign, Coffee, Zap, User, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
+
+// Helper function to generate date string
+const getDateStr = (year, month, day) => {
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+};
+
+// Helper function to get date from date string
+const getDateFromStr = (dateStr) => {
+  if (!dateStr) return null;
+  const parts = dateStr.split('-');
+  return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+};
 
 // --- Initial Event Data ---
-const initialEvents = [
-  { 
-    name: 'Arijit Singh Concert', 
-    time: '10:00 PM', 
-    city: 'Delhi - Pragati Maidan', 
-    price: '45.90',
-    image: 'url("https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Arijit+Concert")',
-    color: 'bg-red-500/30',
-    category: 'Concerts'
-  },
-  { 
-    name: 'Tape a tale - The poetic night', 
-    time: '9:00 PM', 
-    city: 'Delhi - Pragati Maidan', 
-    price: '45.90',
-    image: 'url("https://via.placeholder.com/600x400/DAF7A6/000000?text=Poetic+Night")',
-    color: 'bg-amber-700/30',
-    category: 'Creative'
-  },
-  { 
-    name: "Hackathon - hacker's night", 
-    time: '11:00 PM', 
-    city: 'Delhi - Pragati Maidan', 
-    price: '45.90',
-    image: 'url("https://via.placeholder.com/600x400/C70039/FFFFFF?text=Hackathon")',
-    color: 'bg-green-700/30',
-    category: 'Challenges'
-  },
-  { 
-    name: 'Garba night - The memorable one', 
-    time: '11:00 PM', 
-    city: 'Delhi - Pragati Maidan', 
-    price: '45.90',
-    image: 'url("https://via.placeholder.com/600x400/900C3F/FFFFFF?text=Garba+Night")',
-    color: 'bg-yellow-400/30',
-    category: 'Cultural'
-  },
-  { 
-    name: 'Competitive Challenges', 
-    time: '11:00 PM', 
-    city: 'Delhi - Pragati Maidan', 
-    price: '45.90',
-    image: 'url("https://via.placeholder.com/600x400/581845/FFFFFF?text=Challenges")',
-    color: 'bg-yellow-600/40',
-    category: 'Challenges'
-  },
-];
+const getInitialEvents = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  
+  return [
+    { 
+      name: 'Arijit Singh Concert', 
+      time: '10:00 PM', 
+      city: 'Delhi - Pragati Maidan', 
+      price: '45.90',
+      image: 'url("https://via.placeholder.com/600x400/FF5733/FFFFFF?text=Arijit+Concert")',
+      color: 'bg-red-500/30',
+      category: 'Concerts',
+      date: getDateStr(year, month, 15)
+    },
+    { 
+      name: 'Tape a tale - The poetic night', 
+      time: '9:00 PM', 
+      city: 'Delhi - Pragati Maidan', 
+      price: '45.90',
+      image: 'url("https://via.placeholder.com/600x400/DAF7A6/000000?text=Poetic+Night")',
+      color: 'bg-amber-700/30',
+      category: 'Creative',
+      date: getDateStr(year, month, 16)
+    },
+    { 
+      name: "Hackathon - hacker's night", 
+      time: '11:00 PM', 
+      city: 'Delhi - Pragati Maidan', 
+      price: '45.90',
+      image: 'url("https://via.placeholder.com/600x400/C70039/FFFFFF?text=Hackathon")',
+      color: 'bg-green-700/30',
+      category: 'Challenges',
+      date: getDateStr(year, month, 17)
+    },
+    { 
+      name: 'Garba night - The memorable one', 
+      time: '11:00 PM', 
+      city: 'Delhi - Pragati Maidan', 
+      price: '45.90',
+      image: 'url("https://via.placeholder.com/600x400/900C3F/FFFFFF?text=Garba+Night")',
+      color: 'bg-yellow-400/30',
+      category: 'Cultural',
+      date: getDateStr(year, month, 18)
+    },
+    { 
+      name: 'Competitive Challenges', 
+      time: '11:00 PM', 
+      city: 'Delhi - Pragati Maidan', 
+      price: '45.90',
+      image: 'url("https://via.placeholder.com/600x400/581845/FFFFFF?text=Challenges")',
+      color: 'bg-yellow-600/40',
+      category: 'Challenges',
+      date: getDateStr(year, month, 20)
+    },
+  ];
+};
+
+const initialEvents = getInitialEvents();
 
 // Color mapping based on category
 const categoryColors = {
@@ -128,6 +153,171 @@ const EventCard = ({ event, onDelete }) => (
   </div>
 );
 
+// Day abbreviations
+const dayAbbr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+// --- Calendar View Component ---
+const CalendarView = ({ events, onEventClick, currentMonth, currentYear, onMonthChange, onToday }) => {
+  const today = new Date();
+  
+  // Generate calendar days for the current month
+  const calendarDays = useMemo(() => {
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+    const daysInMonth = lastDayOfMonth.getDate();
+    const startingDayOfWeek = firstDayOfMonth.getDay();
+
+    const days = [];
+
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(null);
+    }
+
+    // Add all days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = getDateStr(currentYear, currentMonth + 1, day);
+      const dateObj = new Date(currentYear, currentMonth, day);
+      const dayOfWeek = dayAbbr[dateObj.getDay()];
+      
+      // Check if it's today
+      const isToday = 
+        day === today.getDate() && 
+        currentMonth === today.getMonth() && 
+        currentYear === today.getFullYear();
+
+      // Get events for this date
+      const dayEvents = events.filter(event => event.date === dateStr);
+
+      days.push({
+        date: day,
+        dateStr: dateStr,
+        day: dayOfWeek,
+        isToday: isToday,
+        events: dayEvents,
+      });
+    }
+
+    return days;
+  }, [currentMonth, currentYear, events, today]);
+
+  const monthYearDisplay = useMemo(() => {
+    return new Date(currentYear, currentMonth).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }, [currentMonth, currentYear]);
+
+  const goToPreviousMonth = () => {
+    if (currentMonth === 0) {
+      onMonthChange(11, currentYear - 1);
+    } else {
+      onMonthChange(currentMonth - 1, currentYear);
+    }
+  };
+
+  const goToNextMonth = () => {
+    if (currentMonth === 11) {
+      onMonthChange(0, currentYear + 1);
+    } else {
+      onMonthChange(currentMonth + 1, currentYear);
+    }
+  };
+
+  return (
+    <div className="bg-[#581c87] rounded-xl p-6 border border-purple-600 shadow-2xl">
+      {/* Month Navigation */}
+      <div className="flex items-center justify-between mb-6">
+        <button
+          onClick={goToPreviousMonth}
+          className="p-2 hover:bg-purple-700 rounded-lg transition-colors text-white"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+        <div className="flex items-center space-x-4">
+          <h2 className="text-2xl font-bold text-white">{monthYearDisplay}</h2>
+          <button
+            onClick={onToday}
+            className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg font-semibold transition-colors"
+          >
+            Today
+          </button>
+        </div>
+        <button
+          onClick={goToNextMonth}
+          className="p-2 hover:bg-purple-700 rounded-lg transition-colors text-white"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* Calendar Grid */}
+      <div className="bg-[#3b0764] rounded-lg overflow-hidden border border-purple-600">
+        {/* Day Headers */}
+        <div className="grid grid-cols-7 border-b-2 border-purple-600">
+          {dayAbbr.map((day) => (
+            <div key={day} className="p-3 border-r border-purple-600 last:border-r-0 font-bold text-center text-white bg-purple-800/50">
+              {day}
+            </div>
+          ))}
+        </div>
+        
+        {/* Calendar Dates Grid */}
+        <div className="grid grid-cols-7">
+          {calendarDays.map((dayData, index) => {
+            if (!dayData) {
+              return (
+                <div key={`empty-${index}`} className="min-h-[100px] border-r border-b border-purple-600 last:border-r-0 bg-[#581c87]/30"></div>
+              );
+            }
+
+            const { date, dateStr, day, isToday, events: dayEvents } = dayData;
+
+            return (
+              <div
+                key={dateStr}
+                className="min-h-[100px] border-r border-b border-purple-600 last:border-r-0 p-2 bg-[#581c87]/50 hover:bg-purple-700/30 transition-all"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div
+                    className={`text-lg font-bold w-8 h-8 flex items-center justify-center rounded-full transition-all
+                      ${isToday 
+                        ? 'bg-pink-600 text-white shadow-lg shadow-pink-600/50' 
+                        : 'text-white'
+                      }`}
+                  >
+                    {date}
+                  </div>
+                  {dayEvents.length > 0 && (
+                    <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
+                  )}
+                </div>
+                <div className="text-xs text-gray-400 mb-2">{day}</div>
+                {dayEvents.length > 0 && (
+                  <div className="space-y-1">
+                    {dayEvents.slice(0, 2).map((event, idx) => (
+                      <div
+                        key={idx}
+                        onClick={() => onEventClick && onEventClick(event)}
+                        className="text-xs bg-pink-600/80 text-white px-2 py-1 rounded cursor-pointer hover:bg-pink-500 truncate"
+                        title={event.name}
+                      >
+                        {event.name}
+                      </div>
+                    ))}
+                    {dayEvents.length > 2 && (
+                      <div className="text-xs text-pink-300 font-semibold">
+                        +{dayEvents.length - 2} more
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // --- Main Page Component ---
 const EventsPage = () => {
   const categories = [
@@ -139,9 +329,12 @@ const EventsPage = () => {
     { icon: Coffee, text: "Drinks", filter: 'Drinks' },
   ];
   
+  const today = new Date();
   const [events, setEvents] = useState(initialEvents);
   const [activeFilter, setActiveFilter] = useState('My feed');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [newEvent, setNewEvent] = useState({
     name: '',
     time: '',
@@ -149,22 +342,53 @@ const EventsPage = () => {
     price: '',
     category: 'Concerts',
     image: '',
+    date: '',
   });
+
+  const isCalendarView = activeFilter === 'Calendar';
 
   // Basic filtering logic
   const filteredEvents = events.filter(event => {
     if (activeFilter === 'My feed' || activeFilter === 'All') {
       return true;
     }
+    if (activeFilter === 'Calendar') {
+      return true; // All events shown in calendar
+    }
     return event.category === activeFilter || event.category === activeFilter;
   });
+
+  // Handle month navigation
+  const handleMonthChange = (month, year) => {
+    setCurrentMonth(month);
+    setCurrentYear(year);
+  };
+
+  // Handle go to today
+  const handleGoToToday = () => {
+    setCurrentMonth(today.getMonth());
+    setCurrentYear(today.getFullYear());
+  };
 
   // Handle adding new event
   const handleAddEvent = (e) => {
     e.preventDefault();
     if (!newEvent.name.trim() || !newEvent.time.trim() || !newEvent.city.trim()) {
-      alert('Please fill in all required fields (Name, Time, City)');
+      alert('Please fill in all required fields (Name, Time, City, Date)');
       return;
+    }
+
+    // Generate date if not provided
+    let eventDate = newEvent.date.trim();
+    if (!eventDate) {
+      // Default to today if no date provided
+      eventDate = getDateStr(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    } else {
+      // Ensure date format is correct (YYYY-MM-DD)
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) {
+        alert('Please enter date in format YYYY-MM-DD (e.g., 2024-12-25)');
+        return;
+      }
     }
 
     // Format image URL properly
@@ -180,6 +404,7 @@ const EventsPage = () => {
       price: newEvent.price || '0.00',
       image: imageUrl,
       color: categoryColors[newEvent.category] || categoryColors['Concerts'],
+      date: eventDate,
     };
 
     setEvents([...events, eventToAdd]);
@@ -192,6 +417,7 @@ const EventsPage = () => {
       price: '',
       category: 'Concerts',
       image: '',
+      date: '',
     });
     setShowAddModal(false);
   };
@@ -260,16 +486,29 @@ const EventsPage = () => {
         </button>
       </div>
 
+      {/* Calendar View */}
+      {isCalendarView && (
+        <CalendarView
+          events={filteredEvents}
+          currentMonth={currentMonth}
+          currentYear={currentYear}
+          onMonthChange={handleMonthChange}
+          onToday={handleGoToToday}
+        />
+      )}
+
       {/* Events Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {filteredEvents.map((event, index) => (
-          <EventCard 
-            key={index} 
-            event={event} 
-            onDelete={() => handleDeleteEvent(index)}
-          />
-        ))}
-      </div>
+      {!isCalendarView && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          {filteredEvents.map((event, index) => (
+            <EventCard 
+              key={index} 
+              event={event} 
+              onDelete={() => handleDeleteEvent(index)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Add Event Modal */}
       {showAddModal && (
@@ -312,6 +551,19 @@ const EventsPage = () => {
                     className="w-full px-4 py-2 bg-[#581c87] text-white border border-purple-600 rounded-lg focus:ring-2 focus:ring-pink-600 focus:border-transparent placeholder-gray-400"
                     placeholder="e.g., 10:00 PM"
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-white mb-2">
+                    Date (YYYY-MM-DD) *
+                  </label>
+                  <input
+                    type="text"
+                    value={newEvent.date}
+                    onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                    className="w-full px-4 py-2 bg-[#581c87] text-white border border-purple-600 rounded-lg focus:ring-2 focus:ring-pink-600 focus:border-transparent placeholder-gray-400"
+                    placeholder="e.g., 2024-12-25 (defaults to today if empty)"
                   />
                 </div>
 
