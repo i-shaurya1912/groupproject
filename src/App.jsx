@@ -1,5 +1,4 @@
 import React from "react";
-import { Leaf } from "lucide-react";
 import { Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login";
@@ -19,7 +18,7 @@ const App = () => {
     <div>
       <Routes>
         <Route path="/Login" element={<Login />}></Route>
-        <Route path="Welcome" element={<Welcome />}></Route>
+        <Route path="/Welcome" element={<Welcome />}></Route>
         <Route path="/Calender" element={<Calender />}></Route>
         <Route path="/Register" element={<Register />}></Route>
         <Route path="/Events" element={<Events />}></Route>

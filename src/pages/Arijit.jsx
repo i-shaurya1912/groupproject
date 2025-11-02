@@ -1,5 +1,5 @@
 import React from "react";
-import arijitImg from "@/assets/arijit.jpg"; // <-- replace with your image path (the one you uploaded)
+// import arijitImg from "@/assets/arijit.jpg"; 
 
 const ConcertPage = () => {
   return (
@@ -17,11 +17,11 @@ const ConcertPage = () => {
         {/* Left Section (Image + Title) */}
         <div className="w-full md:w-1/2 flex flex-col items-center">
           <div className="bg-gradient-to-t from-orange-600 to-orange-300 rounded-2xl overflow-hidden mb-6">
-            <img
+            {/* <img
               src={arijitImg}
               alt="Arijit Singh"
               className="w-full h-80 object-cover"
-            />
+            /> */}
           </div>
           <h1 className="text-3xl font-bold text-center text-[#4b1c6d]">Arijit Singh</h1>
           <p className="text-center text-[#6c2aa7] mt-1">

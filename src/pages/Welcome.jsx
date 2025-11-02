@@ -1,14 +1,14 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
+import { FaHeadset, FaUserTie } from "react-icons/fa";
 
 // Role Card Component - Kept separate for clean structure
-const RoleCard = ({ title, description, icon, bgColor, iconColor }) => (
+const RoleCard = ({ title, description, icon: Icon, bgColor, iconColor }) => (
   <div
     className={`p-6 rounded-lg shadow-2xl cursor-pointer ${bgColor} text-gray-900 transform transition duration-300 hover:scale-[1.03] border-4 border-white/50`}
   >
-    <div className={`text-6xl mb-4 ${iconColor} text-center`}>
-      {/* Assuming Font Awesome is loaded */}
-      <i className={icon}></i>
+    <div className={`text-6xl mb-4 ${iconColor} text-center flex justify-center`}>
+      <Icon />
     </div>
     <h3 className="text-3xl font-extrabold mb-2 text-center">{title}</h3>
     <p className="text-center font-medium opacity-90">{description}</p>
@@ -19,9 +19,6 @@ const RoleCard = ({ title, description, icon, bgColor, iconColor }) => (
 const Welcome = () => {
   return (
     <>
-      {/* Load Font Awesome for icons (This script must load first) */}
-      {/* NOTE: In a modern React app, you should install a package like 'react-icons' instead of loading a script tag here. */}
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 
       <div className="min-h-screen bg-purple-900/90 font-sans text-white">
         {/* Header/Navigation Bar */}
@@ -53,7 +50,7 @@ const Welcome = () => {
             Simplify your events - from planning to perfection
           </p>
 
-          <Link rel="stylesheet" to="/Login">
+          <Link to="/Login">
             <button className="bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-lg shadow-xl transition duration-300 transform hover:scale-105 mb-16">
               Get started
             </button>
@@ -69,14 +66,14 @@ const Welcome = () => {
             <RoleCard
               title="Admin"
               description="Manage teams, budgets & all event operations."
-              icon="fas fa-headset"
+              icon={FaHeadset}
               bgColor="bg-yellow-200"
               iconColor="text-gray-900"
             />
             <RoleCard
               title="User"
               description="Plan your perfect event - book venues."
-              icon="fas fa-user-tie"
+              icon={FaUserTie}
               bgColor="bg-pink-300"
               iconColor="text-gray-900"
             />
